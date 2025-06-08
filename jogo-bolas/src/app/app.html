@@ -1,0 +1,26 @@
+<div class="background-overlay"></div>
+<div class="container">
+  <h1>Jogo das Bolas Coloridas</h1>
+  <button (click)="novoJogo()">Novo Jogo</button>
+  <div *ngIf="mensagem" class="mensagem">{{ mensagem }}</div>
+  <div *ngIf="tubos?.length" class="tubos">
+    <div *ngFor="let tubo of tubos; let i = index" class="tubo" [class.selecionado]="i === tuboSelecionado" (click)="selecionarTubo(i)">
+      <div class="tubo-label">Tubo {{ i + 1 }}</div>
+      <div class="bolas">
+        <div *ngFor="let bola of tubo" class="bola" [ngStyle]="{'background': corBola(bola)}"></div>
+      </div>
+    </div>
+  </div>
+  <div class="movimentos-info">Movimentos realizados: <b>{{ movimentos }}</b></div>
+  <div class="explicacao-pilha">
+
+  </div>
+</div>
+
+<div *ngIf="mostrarPopupVitoria" class="vitoria-popup">
+  <div class="vitoria-popup-content">
+    <h2>🎉 Parabéns! Você venceu! 🎉</h2>
+    <p>Você completou o jogo em <b>{{ movimentosVitoria }}</b> movimentos.</p>
+    <button (click)="fecharPopupVitoria()">Fechar</button>
+  </div>
+</div>
