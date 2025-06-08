@@ -76,8 +76,7 @@ public class Main {
                             "Requisição de movimento inválida. Informe: fromTube e toTube (inteiros)."));
                 }
 
-                String moveResultMessage = traduzirMensagem(
-                        gameBoard.makeMove(moveRequest.fromTube, moveRequest.toTube));
+                String moveResultMessage = gameBoard.makeMove(moveRequest.fromTube, moveRequest.toTube);
                 Map<String, Object> gameState = gameBoard.getGameStateData();
                 gameState.put("message", moveResultMessage);
 
@@ -106,7 +105,7 @@ public class Main {
                 if (fromTubeStr == null || toTubeStr == null) {
                     res.status(400);
                     return gson.toJson(
-                            new GameBoard.ValidationResult(false, "Missing 'fromTube' or 'toTube' query parameters."));
+                            new GameBoard.ValidationResult(false, "Parâmetros 'fromTube' ou 'toTube' ausentes."));
                 }
 
                 int fromTube = Integer.parseInt(fromTubeStr);
@@ -118,11 +117,11 @@ public class Main {
             } catch (NumberFormatException e) {
                 res.status(400);
                 return gson.toJson(new GameBoard.ValidationResult(false,
-                        "Invalid 'fromTube' or 'toTube' query parameters. Must be numbers."));
+                        "Parâmetros 'fromTube' ou 'toTube' inválidos. Devem ser números."));
             } catch (Exception e) {
                 e.printStackTrace();
                 res.status(500);
-                return gson.toJson(new GameBoard.ValidationResult(false, "Error validating move: " + e.getMessage()));
+                return gson.toJson(new GameBoard.ValidationResult(false, "Erro ao validar movimento: " + e.getMessage()));
             }
         });
 
@@ -138,7 +137,7 @@ public class Main {
                 e.printStackTrace();
                 res.status(500);
                 Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("isVictory", false); 
+                errorResponse.put("isVictory", false);
                 errorResponse.put("message", "Erro ao verificar status de vitória: " + e.getMessage());
                 errorResponse.put("score", 0);
                 errorResponse.put("moves", 0);
@@ -146,9 +145,9 @@ public class Main {
             }
         });
 
-        get("/status", (req, res) -> gson.toJson(Map.of("status", "Color Ball Classification Game Server is running")));
+        get("/status", (req, res) -> gson.toJson(Map.of("status", "Servidor do jogo de classificação de bolas está rodando")));
 
-        System.out.println("Color Ball Classification Game Server running on http://localhost:4567");
+        System.out.println("Servidor do jogo de classificação de bolas rodando em http://localhost:4567");
     }
 
     static class MoveRequest {
@@ -158,23 +157,5 @@ public class Main {
         public boolean isValid() {
             return fromTube != null && toTube != null;
         }
-    }
-
-    private static String traduzirMensagem(String msg) {
-        if (msg == null)
-            return "";
-        if (msg.equals("Invalid tube selection."))
-            return "Movimento inválido: seleção de tubo incorreta.";
-        if (msg.equals("Cannot move from an empty tube."))
-            return "Não é possível mover de um tubo vazio.";
-        if (msg.equals("Cannot move to a full tube."))
-            return "Não é possível mover para um tubo cheio.";
-        if (msg.equals("Immediate reverse move is not allowed."))
-            return "Movimento reverso imediato não é permitido.";
-        if (msg.equals("Move successful."))
-            return "Movimento realizado com sucesso!";
-        if (msg.startsWith("Victory!"))
-            return "Parabéns! Você venceu! " + msg.replace("Victory!", "");
-        return msg;
     }
 }

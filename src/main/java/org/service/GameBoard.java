@@ -71,25 +71,24 @@ public class GameBoard {
         if (fromTubeIndex < 0 || fromTubeIndex >= NUM_TUBES ||
                 toTubeIndex < 0 || toTubeIndex >= NUM_TUBES ||
                 fromTubeIndex == toTubeIndex) {
-            return "Invalid tube selection.";
+            return "Movimento inválido: seleção de tubo incorreta.";
         }
 
         Tube fromTube = tubes.get(fromTubeIndex);
         Tube toTube = tubes.get(toTubeIndex);
 
         if (fromTube.isEmpty()) {
-            return "Cannot move from an empty tube.";
+            return "Não é possível mover de um tubo vazio.";
         }
         if (toTube.isFull()) {
-            return "Cannot move to a full tube.";
+            return "Não é possível mover para um tubo cheio.";
         }
 
         Ball ballToMove = fromTube.peekBall();
 
         if (lastMove != null && lastMove.isReversedBy(fromTubeIndex, toTubeIndex, ballToMove)) {
-            return "Immediate reverse move is not allowed.";
+            return "Movimento reverso imediato não é permitido.";
         }
-
 
         ballToMove = fromTube.popBall();
         toTube.pushBall(ballToMove);
@@ -99,45 +98,51 @@ public class GameBoard {
         this.moveCount++;
 
         if (checkVictory()) {
-            return "Victory! All tubes are sorted. Total moves: " + moveCount;
+            return "Parabéns! Você venceu! Todos os tubos estão organizados. Total de movimentos: " + moveCount;
         }
-        return "Move successful.";
+        return "Movimento realizado com sucesso!";
     }
 
     public ValidationResult isMoveValid(int fromTubeIndex, int toTubeIndex) {
         if (fromTubeIndex < 0 || fromTubeIndex >= NUM_TUBES ||
                 toTubeIndex < 0 || toTubeIndex >= NUM_TUBES) {
-            return new ValidationResult(false, "Tube index out of bounds.");
+            return new ValidationResult(false, "Índice de tubo fora do limite.");
         }
         if (fromTubeIndex == toTubeIndex) {
-            return new ValidationResult(false, "Source and destination tubes cannot be the same.");
+            return new ValidationResult(false, "Os tubos de origem e destino não podem ser iguais.");
         }
 
         Tube fromTube = tubes.get(fromTubeIndex);
         Tube toTube = tubes.get(toTubeIndex);
 
         if (fromTube.isEmpty()) {
-            return new ValidationResult(false, "Cannot move from an empty tube.");
+            return new ValidationResult(false, "Não é possível mover de um tubo vazio.");
         }
         if (toTube.isFull()) {
-            return new ValidationResult(false, "Destination tube is full.");
+            return new ValidationResult(false, "O tubo de destino está cheio.");
         }
 
         Ball ballToValidate = fromTube.peekBall();
         if (lastMove != null && lastMove.isReversedBy(fromTubeIndex, toTubeIndex, ballToValidate)) {
-            return new ValidationResult(false, "Immediate reverse move is not allowed.");
+            return new ValidationResult(false, "Movimento reverso imediato não é permitido.");
         }
 
-        return new ValidationResult(true, "Move is valid.");
+        return new ValidationResult(true, "Movimento válido.");
     }
 
     public boolean checkVictory() {
+        int emptyTubes = 0;
+        int fullHomogeneousTubes = 0;
+
         for (Tube tube : tubes) {
-            if (!tube.isHomogeneousOrEmpty()) {
-                return false;
+            if (tube.isEmpty()) {
+                emptyTubes++;
+            } else if (tube.isFull() && tube.sameOrEmpty()) {
+                fullHomogeneousTubes++;
             }
         }
-        return true;
+
+        return emptyTubes == 1 && fullHomogeneousTubes == 6;
     }
 
     public void resetGame() {
@@ -172,10 +177,6 @@ public class GameBoard {
         return gameState;
     }
 
-    public List<Tube> getTubes() {
-        return Collections.unmodifiableList(tubes);
-    }
-
     public int getMoveCount() {
         return moveCount;
     }
@@ -183,5 +184,4 @@ public class GameBoard {
     public int getScore() {
         return score;
     }
-
 }

@@ -14,9 +14,6 @@ public class Tube {
         this.balls = new Stack<>();
     }
 
-    public Tube() {
-        this(MAX_CAPACITY);
-    }
 
     public boolean pushBall(Ball ball) {
         if (isFull()) {
@@ -56,7 +53,7 @@ public class Tube {
         return capacity;
     }
 
-    public boolean isHomogeneousOrEmpty() {
+    public boolean sameOrEmpty() {
         if (isEmpty()) {
             return true;
         }
@@ -76,15 +73,6 @@ public class Tube {
         return balls.stream().map(Ball::getColor).collect(Collectors.toList());
     }
 
-    public void addBalls(List<Ball> initialBalls) {
-        for (Ball ball : initialBalls) {
-            if (!isFull()) {
-                this.balls.push(ball);
-            } else {
-                break;
-            }
-        }
-    }
 
     public void clear() {
         balls.clear();
